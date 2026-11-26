@@ -1,32 +1,30 @@
-NEON//BDAY — MATRIX BIRTHDAY STUDIO
-===================================
-A reusable cyberpunk / Matrix-inspired birthday microsite.
+NEON_BDAY_v3
+============
 
-FEATURES
-- Animated Matrix-style falling characters (visual effect only; no commands run).
-- Terminal-style intro sequence.
-- Neon themes: Matrix green, Cyberpunk pink, Ice blue, Gold glitch.
-- Optional recipient name, sender signature, date and message.
-- Multiple local file previews and a public media URL gallery.
-- Share-link generator, QR code download and WhatsApp sharing.
-- Responsive layout for mobile and desktop.
-- No login, password, OTP, payment, camera, microphone or contact collection.
+A cyber birthday experience with themes, music chimes, balloons, cake, fireworks, local media previews, public media links, share URLs and QR codes.
 
 RUN LOCALLY
 1. Open a terminal in this folder.
 2. Run: python3 -m http.server 8000
-3. Visit: http://127.0.0.1:8000
+3. Open: http://127.0.0.1:8000
 
-PUBLISH ON GITHUB PAGES
-1. Open repository Settings -> Pages.
-2. Source: Deploy from a branch.
-3. Branch: main ; Folder: /(root) ; Save.
-4. Wait for the Pages deployment to finish successfully in Actions.
-5. Open: https://lisophia927-dev.github.io/birthday-surprise/
-6. Paste that public address into PUBLISHED WEBSITE URL, then build the share link and QR.
+If port 8000 is busy:
+python3 -m http.server 8080
 
-MEDIA SHARING LIMITATION
-Files selected in MEMORY VAULT are local previews only. A QR code/link cannot carry large photo or video files. To share media, upload each file to a public HTTPS host you control, then paste its public URL into PUBLIC MEDIA URLS, one URL per line. Ensure the host permits public access. The QR/link includes greeting text and public media URLs, not local files. The QR library loads from a CDN and needs internet access.
+PUBLISH
+Repository: lisophia927-dev/birthday-surprise
+Published URL: https://lisophia927-dev.github.io/birthday-surprise/
+
+In GitHub repository Settings > Pages:
+- Source: Deploy from a branch
+- Branch: main
+- Folder: / (root)
+- Click Save
+
+Wait for a successful Pages deployment in Actions before opening the public URL.
+
+MEDIA
+Local file selections are previews only. Upload photos/videos to a public HTTPS host and paste direct links into PUBLIC MEDIA URLS. Never use private or sensitive links.
 
 SAFETY
-The Matrix rain and terminal are visual effects only. This page does not execute Kali/Linux commands, scan devices, exploit anything, or collect visitor data. Never ask recipients for passwords, OTPs, card details, APK installs or permissions.
+The Matrix rain and terminal are visual effects only. The page does not execute commands, scan devices, collect data, or request passwords, OTPs or payment details.
