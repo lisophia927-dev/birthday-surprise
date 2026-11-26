@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#020807">
-  <title>NEON_BDAY_v3</title>
+  <title>NEON_BDAY_v3_WITH_HAPPY_BIRTHDAY_SONG</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <canvas id="matrix" aria-hidden="true"></canvas>
   <div class="scan" aria-hidden="true"></div>
   <header>
-    <a class="logo">▣ NEON<span>//</span>BDAY v3</a>
-    <div><i class="dot"></i> SYSTEM ONLINE <button id="sound" class="small" type="button">♫ SOUND OFF</button></div>
+    <a class="logo" href="#studio">▣ NEON<span>//</span>BDAY v3</a>
+    <div class="system-status"><i class="dot" aria-hidden="true"></i> SYSTEM ONLINE <button id="sound" class="small" type="button" aria-pressed="false">♫ SOUND OFF</button></div>
   </header>
   <main>
     <section id="studio">
@@ -35,38 +35,48 @@
         </article>
         <article class="panel">
           <h2>02 / MEMORY VAULT</h2>
-          <p class="hint">Select photos, videos and audio for local preview. For recipients to see them, upload them to public HTTPS hosting and add the links below.</p>
+          <p class="hint">Select photos, videos and audio for a local file list. To let recipients view media, host it publicly over HTTPS and add the links below.</p>
           <label class="drop">＋<b>ADD PHOTOS / VIDEOS / AUDIO / FILES</b><small>Click to choose multiple files</small><input id="files" type="file" multiple accept="image/*,video/*,audio/*,.pdf"></label>
-          <div id="localFiles" class="files">NO FILES SELECTED</div>
+          <div id="localFiles" class="files" aria-live="polite">NO FILES SELECTED</div>
           <label>PUBLIC MEDIA URLS <small>ONE HTTPS LINK PER LINE</small><textarea id="media" rows="3" placeholder="https://your-host/photo.jpg&#10;https://your-host/video.mp4"></textarea></label>
         </article>
       </div>
       <article class="panel share">
         <h2>03 / PUBLISH + SHARE</h2>
-        <label>PUBLISHED WEBSITE URL<input id="base" type="url" value="https://lisophia927-dev.github.io/birthday-surprise/"></label>
-        <div class="actions"><button id="build" class="primary" type="button">GENERATE LINK + QR</button><button id="copy" class="secondary" type="button">COPY LINK</button><button id="wa" class="secondary" type="button">WHATSAPP ↗</button></div>
-        <div id="sharebox" class="sharebox hidden"><code id="link"></code><div class="qr"><div id="qr"></div><small>SCAN TO OPEN THE SURPRISE</small><button id="download" class="secondary" type="button">DOWNLOAD QR</button></div></div>
+        <label>PUBLISHED WEBSITE URL<input id="base" type="url" value="https://lisophia927-dev.github.io/birthday-surprise/" placeholder="https://username.github.io/repository/"></label>
+        <div class="actions">
+          <button id="build" class="primary" type="button">GENERATE LINK + QR</button>
+          <button id="copy" class="secondary" type="button">COPY LINK</button>
+          <button id="wa" class="secondary" type="button">WHATSAPP ↗</button>
+        </div>
+        <div id="sharebox" class="sharebox hidden">
+          <code id="link"></code>
+          <div class="qr"><div id="qr" aria-label="QR code for the birthday greeting"></div><small>SCAN TO OPEN THE SURPRISE</small><button id="download" class="secondary" type="button">DOWNLOAD QR</button></div>
+        </div>
         <p id="status" role="status">READY // CREATE YOUR BIRTHDAY DROP</p>
       </article>
     </section>
-
-    <section id="party" class="hidden">
-      <div class="terminal" id="terminal"><p>&gt; booting celebration.exe</p><p>&gt; loading good vibes...</p><p>&gt; access granted!</p></div>
+    <section id="party" class="hidden" aria-live="polite">
+      <div class="terminal" id="terminal"><p>&gt; booting celebration sequence</p><p>&gt; loading good vibes...</p><p>&gt; access granted!</p></div>
       <article class="partycard">
         <p class="eyebrow">✦ SPECIAL TRANSMISSION RECEIVED ✦</p>
         <div class="bigballoons" aria-label="Balloons">🎈 🎈 🎈 🎈 🎈</div>
         <h1 id="title">HAPPY BIRTHDAY!</h1>
-        <div class="cake">🎂</div>
-        <p id="wish"></p>
-        <p id="birthdayDate" class="date"></p>
+        <div class="cake" aria-label="Birthday cake">🎂</div>
+        <p id="wish"></p><p id="birthdayDate" class="date"></p>
         <div id="gallery" class="gallery"></div>
-        <div class="partybuttons"><button id="music" class="primary" type="button">▶ PLAY CELEBRATION MUSIC</button><button id="boom" class="secondary" type="button">🎆 FIREWORKS!</button><button id="letterBtn" class="secondary" type="button">💌 OPEN SECRET LETTER</button></div>
+        <div class="partybuttons">
+          <button id="music" class="primary" type="button" aria-pressed="false">▶ PLAY HAPPY BIRTHDAY SONG</button>
+          <button id="boom" class="secondary" type="button">🎆 FIREWORKS!</button>
+          <button id="letterBtn" class="secondary" type="button">💌 OPEN SECRET LETTER</button>
+        </div>
+        <p class="music-note">Original synthesized melody; no external audio file or copyrighted recording is bundled.</p>
         <div id="letter" class="letter hidden"><div class="envelope">💌</div><h2>A MESSAGE FOR YOU</h2><p id="letterText"></p><b id="sign"></b></div>
         <button id="again" class="small" type="button">← BACK TO STUDIO</button>
       </article>
     </section>
   </main>
-  <div id="particles"></div>
+  <div id="particles" aria-hidden="true"></div>
   <footer>NEON_BDAY_v3 · GOOD VIBES ONLY · NO LOGIN / OTP / PAYMENT REQUESTS</footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
   <script src="script.js" defer></script>
