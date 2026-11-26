@@ -1,141 +1,41 @@
-const $ = (id) => document.getElementById(id);
-let currentGreeting = { name: "", message: "Wishing you a day filled with happiness, laughter and beautiful memories. Have a wonderful birthday!", theme: "midnight" };
-let audioContext = null;
-let soundOn = false;
-
-function applyTheme(theme) {
-  document.body.classList.remove("theme-rose", "theme-ocean", "theme-gold");
-  if (theme !== "midnight") document.body.classList.add(`theme-${theme}`);
+const $=id=>document.getElementById(id);
+let chosenFiles=[];
+let audioCtx=null, sound=false;
+const safeThemes=["matrix","cyber","ice","gold"];
+function theme(mode){document.body.classList.remove("mode-cyber","mode-ice","mode-gold");if(mode!=="matrix")document.body.classList.add("mode-"+mode)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function bytes(n){if(n<1024)return n+" B";if(n<1048576)return (n/1024).toFixed(1)+" KB";return (n/1048576).toFixed(1)+" MB"}
+function drawFiles(){
+ const list=$("fileList");list.innerHTML="";
+ if(!chosenFiles.length){list.innerHTML='<div class="empty">NO FILES ATTACHED YET // WAITING FOR INPUT</div>';return}
+ chosenFiles.forEach((f,i)=>{
+  const row=document.createElement("div");row.className="file-item";
+  const symbol=f.type.startsWith("image/")?"▧":f.type.startsWith("video/")?"▶":f.type.startsWith("audio/")?"♫":f.type==="application/pdf"?"PDF":"▤";
+  const thumb=f.type.startsWith("image/")?`<img class="file-thumb" src="${URL.createObjectURL(f)}" alt="">`:`<div class="file-symbol">${symbol}</div>`;
+  row.innerHTML=`${thumb}<div><div class="file-name">${esc(f.name)}</div><div class="file-meta">${esc(f.type||"file")} · ${bytes(f.size)}</div></div><button class="remove-file" aria-label="Remove file">×</button>`;
+  row.querySelector("button").addEventListener("click",()=>{chosenFiles.splice(i,1);drawFiles()});list.appendChild(row);
+ });
 }
-
-function showGreeting(data) {
-  currentGreeting = data;
-  applyTheme(data.theme || "midnight");
-  $("greetingTitle").textContent = data.name ? `Happy Birthday, ${data.name}!` : "Happy Birthday!";
-  $("greetingMessage").textContent = data.message;
-  $("letterMessage").textContent = data.message;
-  $("builder").classList.add("hidden");
-  $("surprise").classList.remove("hidden");
-}
-
-function encodeGreeting(data) {
-  const url = new URL($("siteUrl").value.trim());
-  url.searchParams.set("to", data.name);
-  url.searchParams.set("message", data.message);
-  url.searchParams.set("theme", data.theme);
-  return url.toString();
-}
-
-$("greetingForm").addEventListener("submit", (event) => {
-  event.preventDefault();
-  currentGreeting = {
-    name: $("recipient").value.trim(),
-    message: $("message").value.trim() || "Wishing you a wonderful birthday!",
-    theme: $("theme").value
-  };
-  $("shareArea").classList.remove("hidden");
-  showGreeting(currentGreeting);
-  $("surprise").classList.add("hidden");
-  $("builder").classList.remove("hidden");
-  $("status").textContent = "Greeting created. Publish the page and enter its public URL to create a share link and QR code.";
-});
-
-$("makeQr").addEventListener("click", () => {
-  const raw = $("siteUrl").value.trim();
-  if (!raw) return $("status").textContent = "Enter your published website URL first.";
-  let url;
-  try { url = new URL(raw); } catch { return $("status").textContent = "That URL does not look valid."; }
-  if (url.protocol !== "https:" && url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
-    return $("status").textContent = "For safe sharing, use a public HTTPS website URL.";
-  }
-  if (typeof QRCode === "undefined") return $("status").textContent = "QR library did not load. Check your internet connection and reload.";
-  const link = encodeGreeting(currentGreeting);
-  $("qrcode").innerHTML = "";
-  new QRCode($("qrcode"), { text: link, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
-  $("qrWrap").classList.remove("hidden");
-  $("status").textContent = "QR code created. Test it with your phone before sharing.";
-});
-
-$("copyLink").addEventListener("click", async () => {
-  try {
-    const link = encodeGreeting(currentGreeting);
-    await navigator.clipboard.writeText(link);
-    $("status").textContent = "Greeting link copied.";
-  } catch { $("status").textContent = "Copy was blocked by the browser. Create the QR code or copy the URL manually."; }
-});
-
-$("whatsapp").addEventListener("click", () => {
-  const link = encodeGreeting(currentGreeting);
-  const text = `I made a little birthday surprise for you! Open it here: ${link}`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
-});
-
-$("downloadQr").addEventListener("click", () => {
-  const canvas = $("qrcode").querySelector("canvas");
-  const img = $("qrcode").querySelector("img");
-  const data = canvas ? canvas.toDataURL("image/png") : (img ? img.src : null);
-  if (!data) return;
-  const a = document.createElement("a");
-  a.href = data; a.download = "birthday-surprise-qr.png"; a.click();
-});
-
-$("celebrate").addEventListener("click", () => {
-  $("letter").classList.remove("hidden");
-  playChime();
-  for (let i = 0; i < 18; i++) {
-    const piece = document.createElement("span");
-    piece.textContent = ["✦", "✧", "♡", "🎉"][i % 4];
-    piece.style.cssText = `position:fixed;left:${Math.random()*100}vw;top:-30px;font-size:${18+Math.random()*22}px;z-index:10;pointer-events:none;animation:fall ${2+Math.random()*2}s linear forwards`;
-    document.body.appendChild(piece);
-    setTimeout(() => piece.remove(), 4200);
-  }
-});
-
-$("backToBuilder").addEventListener("click", () => {
-  $("surprise").classList.add("hidden");
-  $("builder").classList.remove("hidden");
-});
-
-function playChime() {
-  if (!soundOn) return;
-  try {
-    audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-    [523.25, 659.25, 783.99].forEach((frequency, index) => {
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      oscillator.frequency.value = frequency;
-      oscillator.type = "sine";
-      gain.gain.setValueAtTime(0.0001, audioContext.currentTime + index * .16);
-      gain.gain.exponentialRampToValueAtTime(.12, audioContext.currentTime + index * .16 + .03);
-      gain.gain.exponentialRampToValueAtTime(.0001, audioContext.currentTime + index * .16 + .45);
-      oscillator.connect(gain); gain.connect(audioContext.destination);
-      oscillator.start(audioContext.currentTime + index * .16);
-      oscillator.stop(audioContext.currentTime + index * .16 + .5);
-    });
-  } catch {}
-}
-
-$("soundToggle").addEventListener("click", async () => {
-  soundOn = !soundOn;
-  $("soundToggle").textContent = soundOn ? "♫ Sound: On" : "♫ Sound: Off";
-  $("soundToggle").setAttribute("aria-pressed", String(soundOn));
-  if (soundOn) {
-    try { audioContext ||= new (window.AudioContext || window.webkitAudioContext)(); await audioContext.resume(); playChime(); } catch {}
-  }
-});
-
-function addFallAnimation() {
-  const style = document.createElement("style");
-  style.textContent = "@keyframes fall{to{transform:translateY(110vh) rotate(500deg);opacity:0}}";
-  document.head.appendChild(style);
-}
-addFallAnimation();
-
-const params = new URLSearchParams(window.location.search);
-if (params.has("message") || params.has("to")) {
-  showGreeting({
-    name: (params.get("to") || "").slice(0, 40),
-    message: (params.get("message") || "Wishing you a wonderful birthday!").slice(0, 400),
-    theme: ["midnight", "rose", "ocean", "gold"].includes(params.get("theme")) ? params.get("theme") : "midnight"
-  });
-}
+$("mediaFiles").addEventListener("change",e=>{chosenFiles=[...chosenFiles,...e.target.files].slice(0,20);drawFiles();e.target.value=""});
+function getData(){return{name:$("recipient").value.trim(),from:$("from").value.trim(),message:$("message").value.trim()||"Wishing you a legendary birthday!",theme:$("theme").value,date:$("date").value,media:$("mediaUrls").value.split(/\n/).map(x=>x.trim()).filter(Boolean).slice(0,12)}}
+function encode(data,base){const u=new URL(base);u.searchParams.set("d",btoa(unescape(encodeURIComponent(JSON.stringify(data)))));return u.toString()}
+function parseData(){try{const raw=new URLSearchParams(location.search).get("d");if(!raw)return null;const d=JSON.parse(decodeURIComponent(escape(atob(raw))));if(!d||typeof d!=="object")return null;return{name:String(d.name||"").slice(0,48),from:String(d.from||"").slice(0,48),message:String(d.message||"Happy Birthday!").slice(0,600),theme:safeThemes.includes(d.theme)?d.theme:"matrix",date:String(d.date||"").slice(0,20),media:Array.isArray(d.media)?d.media.filter(x=>typeof x==="string"&&/^https:\/\//i.test(x)).slice(0,12):[]}}catch{return null}}
+function show(data){theme(data.theme);$("builder").classList.add("hidden");$("experience").classList.remove("hidden");$("wishTitle").textContent=data.name?"HAPPY BIRTHDAY, "+data.name.toUpperCase()+"!":"HAPPY BIRTHDAY!";$("wishMessage").textContent=data.message;$("wishDate").textContent=data.date?"✦ "+data.date:"";$("secretText").textContent=data.message;$("signature").textContent=data.from?"— "+data.from:"— WITH GOOD VIBES";const gal=$("publicGallery");gal.innerHTML="";data.media.forEach(url=>{const a=document.createElement("a");a.href=url;a.target="_blank";a.rel="noopener noreferrer";const ext=url.split("?")[0].toLowerCase();if(/\.(png|jpe?g|gif|webp|avif)$/.test(ext)){const img=document.createElement("img");img.src=url;img.alt="Shared birthday memory";a.append(img)}else if(/\.(mp4|webm|ogg|mov)$/.test(ext)){const v=document.createElement("video");v.src=url;v.controls=true;v.preload="metadata";a.append(v)}else{a.textContent="OPEN SHARED MEMORY ↗"}gal.append(a)});typeTerminal()}
+function typeTerminal(){const lines=["> establishing secure birthday connection...","> decrypting good vibes...","> loading memory fragments...","> access granted. HAPPY BIRTHDAY!"];const t=$("terminal");t.innerHTML="";lines.forEach((line,i)=>setTimeout(()=>{const p=document.createElement("p");p.textContent=line;t.append(p)},i*430))}
+$("previewBtn").addEventListener("click",()=>show(getData()));
+$("revealBtn").addEventListener("click",()=>$("secret").classList.toggle("hidden"));
+$("backBtn").addEventListener("click",()=>{$("experience").classList.add("hidden");$("builder").classList.remove("hidden")});
+$("buildLink").addEventListener("click",()=>{let base;try{base=new URL($("siteUrl").value.trim());if(base.protocol!=="https:")throw 0}catch{$("status").textContent="ENTER A VALID PUBLIC HTTPS WEBSITE URL FIRST.";return}const link=encode(getData(),base);$("generatedLink").textContent=link;$("shareResult").classList.remove("hidden");$("qrcode").innerHTML="";if(typeof QRCode==="undefined"){$("status").textContent="QR LIBRARY NOT LOADED. CHECK INTERNET AND RELOAD.";return}new QRCode($("qrcode"),{text:link,width:190,height:190,correctLevel:QRCode.CorrectLevel.M});$("status").textContent="SHARE LINK + QR GENERATED. TEST ON ANOTHER PHONE."});
+$("copyLink").addEventListener("click",async()=>{const l=$("generatedLink").textContent;if(!l)return $("status").textContent="BUILD THE SHARE LINK FIRST.";try{await navigator.clipboard.writeText(l);$("status").textContent="LINK COPIED TO CLIPBOARD."}catch{$("status").textContent="COPY BLOCKED BY BROWSER. SELECT THE LINK MANUALLY."}});
+$("whatsapp").addEventListener("click",()=>{const l=$("generatedLink").textContent;if(!l)return $("status").textContent="BUILD THE SHARE LINK FIRST.";window.open("https://wa.me/?text="+encodeURIComponent("I made a birthday surprise for you ✨ Open it here: "+l),"_blank","noopener,noreferrer")});
+$("downloadQr").addEventListener("click",()=>{const c=$("qrcode").querySelector("canvas"),im=$("qrcode").querySelector("img"),url=c?c.toDataURL("image/png"):im?.src;if(!url)return;const a=document.createElement("a");a.href=url;a.download="neon-birthday-qr.png";a.click()});
+$("theme").addEventListener("change",e=>theme(e.target.value));
+$("soundBtn").addEventListener("click",async()=>{sound=!sound;$("soundBtn").textContent=sound?"♫ SOUND ON":"♫ SOUND OFF";if(!sound)return;try{audioCtx ||=new(window.AudioContext||window.webkitAudioContext)();await audioCtx.resume();[440,554,659,880].forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.frequency.value=f;g.gain.setValueAtTime(.0001,audioCtx.currentTime+i*.13);g.gain.exponentialRampToValueAtTime(.08,audioCtx.currentTime+i*.13+.03);g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+i*.13+.3);o.connect(g);g.connect(audioCtx.destination);o.start(audioCtx.currentTime+i*.13);o.stop(audioCtx.currentTime+i*.13+.32)})}catch{}});
+$("confettiBtn").addEventListener("click",()=>{for(let i=0;i<55;i++){const s=document.createElement("i");s.textContent=["✦","✧","♥","▣"][i%4];s.style.cssText=`position:fixed;z-index:9;left:${Math.random()*100}vw;top:-25px;color:var(--neon);font-style:normal;font-size:${12+Math.random()*20}px;pointer-events:none;animation:rain ${2+Math.random()*2.5}s linear forwards`;document.body.append(s);setTimeout(()=>s.remove(),4800)}});
+const anim=document.createElement("style");anim.textContent="@keyframes rain{to{transform:translateY(110vh) rotate(700deg);opacity:0}}";document.head.append(anim);
+const incoming=parseData();if(incoming)show(incoming);
+// Matrix-style falling characters are a decorative animation only.
+const canvas=$("matrix"),ctx=canvas.getContext("2d");let cols=[],font=14;
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Array(Math.ceil(canvas.width/font)).fill(1)}
+addEventListener("resize",resize);resize();
+setInterval(()=>{ctx.fillStyle="rgba(2,8,7,.09)";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle=getComputedStyle(document.body).getPropertyValue("--neon");ctx.font=font+"px monospace";cols.forEach((y,i)=>{ctx.fillText("01アイウエオカキクケコサシスセソ"[Math.floor(Math.random()*22)],i*font,y*font);if(y*font>canvas.height&&Math.random()>.975)cols[i]=0;cols[i]++})},55);

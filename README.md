@@ -1,32 +1,32 @@
-# birthday-surprise
+# Neon Matrix Birthday Studio
 
-A small, shareable birthday greeting page. Publish it with GitHub Pages, then create a personalized link or QR code from the page.
+A cyberpunk-inspired, shareable birthday microsite with customizable greetings, themes, a QR code generator, and optional public media links.
+
+## Run locally
+
+Open a terminal in the project folder and run:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then visit <http://127.0.0.1:8000>.
 
 ## Publish with GitHub Pages
 
-1. Open the [`birthday-surprise` repository](https://github.com/lisophia927-dev/birthday-surprise).
-2. Select **Settings** in the repository navigation (not your account settings).
-3. In the left sidebar, open **Pages** under **Code and automation**.
-4. Under **Build and deployment**, choose:
-   - **Source:** Deploy from a branch
-   - **Branch:** `main`
-   - **Folder:** `/(root)`
-5. Click **Save** and wait for GitHub Pages to finish deploying.
+1. In this repository, open **Settings → Pages**.
+2. Under **Build and deployment**, choose **Deploy from a branch**.
+3. Select branch `main` and folder `/(root)`, then click **Save**.
+4. Wait for the Pages deployment to finish successfully in **Actions**.
+5. Open the published site: <https://lisophia927-dev.github.io/birthday-surprise/>.
+6. Paste that URL in the **Published website URL** field to build a share link and QR code.
 
-Your site URL will be:
+## Media sharing
 
-```text
-https://lisophia927-dev.github.io/birthday-surprise/
-```
+Files selected in the Memory Vault are local previews only and are not included in the share link. To share media, upload files to a public HTTPS host you control and paste their public URLs, one per line, into **Public media URLs**. Do not include private or sensitive files.
 
-Open the URL to confirm the page loads before sharing it.
+The greeting text and media URLs are encoded in the share link. The QR-code library is loaded from a CDN, so generating QR codes requires an internet connection.
 
-## Create and share a birthday greeting
+## Privacy and safety
 
-1. Open the published website and fill in the recipient's name, message, and theme.
-2. Select **Create my surprise**.
-3. In **Published website URL**, enter the public URL above.
-4. Select **Create QR code**. You can also use **Copy greeting link** or **Share on WhatsApp**.
-5. Select **Download QR image** if you want to share the QR code separately. Scan-test it with another phone before sending it.
-
-The greeting details are included in the share URL, so anyone with that link can view the greeting. The page does not require sign-in.
+The Matrix animation is decorative. This site does not execute terminal commands, scan devices, or ask for login credentials, OTPs, payment details, camera or microphone access, or contacts.
