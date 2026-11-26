@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#160b2c">
+  <title>A Little Birthday Surprise</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sparkles" aria-hidden="true"></div>
+  <header class="topbar">
+    <span class="brand">✦ A Little Surprise</span>
+    <button id="soundToggle" class="ghost" type="button" aria-pressed="false">♫ Sound: Off</button>
+  </header>
+
+  <main>
+    <section id="builder" class="panel">
+      <p class="eyebrow">MAKE SOMEONE SMILE</p>
+      <h1>Create a birthday surprise</h1>
+      <p class="intro">Personalize a greeting, create a shareable link and QR code, then send it on WhatsApp.</p>
+
+      <form id="greetingForm">
+        <label for="recipient">Recipient's name <span>(optional)</span></label>
+        <input id="recipient" maxlength="40" placeholder="Leave blank for a general greeting">
+
+        <label for="message">Your birthday message</label>
+        <textarea id="message" maxlength="400" rows="4">Wishing you a day filled with happiness, laughter and beautiful memories. Have a wonderful birthday!</textarea>
+
+        <label for="theme">Choose a theme</label>
+        <select id="theme">
+          <option value="midnight">Midnight purple</option>
+          <option value="rose">Rose pink</option>
+          <option value="ocean">Ocean blue</option>
+          <option value="gold">Golden celebration</option>
+        </select>
+
+        <button class="primary" type="submit">Create my surprise ✨</button>
+      </form>
+
+      <div id="shareArea" class="share-area hidden">
+        <h2>Your surprise is ready</h2>
+        <p>First publish this website online (for example, with GitHub Pages). Paste its public page URL below to make a QR code that works for people outside your Wi-Fi.</p>
+        <label for="siteUrl">Published website URL</label>
+        <input id="siteUrl" type="url" placeholder="https://yourname.github.io/birthday-surprise/" inputmode="url">
+        <div class="share-actions">
+          <button id="makeQr" class="primary" type="button">Create QR code</button>
+          <button id="copyLink" class="secondary" type="button">Copy greeting link</button>
+          <button id="whatsapp" class="secondary" type="button">Share on WhatsApp</button>
+        </div>
+        <div id="qrWrap" class="qr-wrap hidden">
+          <div id="qrcode" aria-label="QR code for this birthday greeting"></div>
+          <p>Scan to open the birthday surprise.</p>
+          <button id="downloadQr" class="secondary" type="button">Download QR image</button>
+        </div>
+        <p id="status" class="status" role="status"></p>
+      </div>
+      <p class="safety-note">Privacy-friendly: this page does not ask for passwords, OTPs, payment details, camera access or contacts. It does not secretly track visitors.</p>
+    </section>
+
+    <section id="surprise" class="panel surprise hidden" aria-live="polite">
+      <p class="eyebrow">A SPECIAL MOMENT FOR YOU</p>
+      <div class="big-heart" aria-hidden="true">♡</div>
+      <h1 id="greetingTitle">Happy Birthday!</h1>
+      <p id="greetingMessage" class="greeting-message"></p>
+      <div class="cake" aria-label="Birthday cake">🎂</div>
+      <div class="balloons" aria-hidden="true"><span>🎈</span><span>🎈</span><span>🎈</span><span>🎈</span></div>
+      <button id="celebrate" class="primary" type="button">Celebrate! 🎉</button>
+      <div id="letter" class="letter hidden">
+        <div class="envelope">💌</div>
+        <h2>A little note</h2>
+        <p id="letterMessage"></p>
+        <p class="signoff">Made with care ♡</p>
+      </div>
+      <button id="backToBuilder" class="ghost" type="button">Create another greeting</button>
+    </section>
+  </main>
+
+  <footer>Made to share kindness. No sign-in required.</footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>
